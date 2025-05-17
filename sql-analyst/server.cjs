@@ -15,30 +15,7 @@ const sqlite3 = require('sqlite3').verbose();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the frontend build
-app.use(express.static(path.join(__dirname, 'dist')));
-// SPA fallback for client-side routing
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
-
-// Use environment variables for sensitive data
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const MONGODB_URI = process.env.MONGODB_URI;
-const PORT = process.env.PORT || 5000;
-
-// MongoDB Chat History Schema
-const chatSchema = new mongoose.Schema({
-  user: String,
-  message: String,
-  response: String,
-  createdAt: { type: Date, default: Date.now }
-});
-const Chat = mongoose.model('Chat', chatSchema);
-
-// Store uploaded DB file path in memory (for demo; use per-user/session in production)
-let uploadedDbPath = null;
-
+// --- API ROUTES ---
 // Upload DB file endpoint
 app.post('/upload', upload.single('dbfile'), (req, res) => {
   uploadedDbPath = path.join(__dirname, 'uploads', req.file.filename);
@@ -333,6 +310,14 @@ app.post('/chat', async (req, res) => {
   await chat.save();
   console.log('[POST /chat] Sending response:', { response });
   res.json({ response });
+});
+
+// Serve static files from the frontend build
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// SPA fallback for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Connect to MongoDB and start server
