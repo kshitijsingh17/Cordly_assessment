@@ -331,7 +331,7 @@ app.get('/{*any}', (req, res) => {
 });
 
 // Connect to MongoDB and start server
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     app.listen(process.env.PORT || 5000, () => {
       console.log(`Server running on http://localhost:${process.env.PORT || 5000}`);
