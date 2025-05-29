@@ -12,6 +12,15 @@ const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 
+// MongoDB Chat History Schema
+const chatSchema = new mongoose.Schema({
+  user: String,
+  message: String,
+  response: String,
+  createdAt: { type: Date, default: Date.now }
+});
+const Chat = mongoose.model('Chat', chatSchema);
+
 app.use(cors());
 app.use(express.json());
 
@@ -26,6 +35,7 @@ app.post('/upload', upload.single('dbfile'), (req, res) => {
 
 // Gemini Flash API call (Google AI Studio endpoint)
 async function callGeminiFlash({ schema, question }) {
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
   try {
     // Use the prompt as provided by the agent (already includes schema DDL if needed)
@@ -321,10 +331,10 @@ app.get('/{*any}', (req, res) => {
 });
 
 // Connect to MongoDB and start server
-mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+    app.listen(process.env.PORT || 5000, () => {
+      console.log(`Server running on http://localhost:${process.env.PORT || 5000}`);
     });
   })
   .catch(err => console.error('MongoDB connection error:', err));
