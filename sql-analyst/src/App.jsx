@@ -15,7 +15,7 @@ import remarkGfm from 'remark-gfm';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://52.41.36.82/';
 
 function ChartBlock({ chart }) {
   if (!chart) return null;
